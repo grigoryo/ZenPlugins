@@ -20,14 +20,13 @@ export async function scrape ({ preferences, fromDate, toDate }) {
 
   // function output
   let accounts
-  let transactions
+  let operations
+  let filteredOperations
 
   await api.version()
 
   if (instanceId) {
     ({ sessionId } = await api.loginByPin({ instanceId, login, pin }))
-
-    // TODO: response.result !== 0
   } else {
     if (!preferencesPassword) {
       inputPassword = await ZenMoney.readLine('[TODO:use approved text]Введите пароль')
@@ -54,15 +53,18 @@ export async function scrape ({ preferences, fromDate, toDate }) {
 
   let lastOperationId
   do {
-    // TODO: fromDate, toDate
-    let operationsAnswer = await api.operations({ sessionId, lastOperationId })
-    transactions = [...transactions, ...operationsAnswer.operations]
+    let operationsAnswer =
+      await api.operations({ sessionId, fromDate, toDate, lastOperationId })
+    operations = [...operations, ...operationsAnswer.operations]
     lastOperationId = operationsAnswer.lastOperationId
   } while (lastOperationId)
 
-  transactions = transactions.filter(transaction => {
-    return !ZenMoney.isAccountSkipped(transaction.incomeAccount)
+  filteredOperations = operations.filter(operation => {
+    return !ZenMoney.isAccountSkipped(operation.incomeAccount)
   })
 
-  return { accounts, transactions }
+  return {
+    accounts,
+    transactions: filteredOperations
+  }
 }

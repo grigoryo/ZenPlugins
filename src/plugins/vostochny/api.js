@@ -1,5 +1,6 @@
 import querystring from 'querystring'
 import _ from 'lodash'
+import moment from 'moment'
 
 import * as network from '../../common/network'
 import * as converters from './converters'
@@ -89,7 +90,7 @@ async function _fetchWrapper (url, body, cookie) {
       // network.fetch options
       sanitizeRequestLog: SANITIZE_REQUEST_LOG,
       sanitizeResponseLog: SANITIZE_RESPONSE_LOG,
-      log: true, // TODO: how I supposed to use this param in scraper level?
+      log: true, // always must be "true" (TODO: move this info to docs)
       stringify: querystring.stringify,
       parse: JSON.parse()
     }
@@ -130,7 +131,7 @@ export async function version () {
     answer.result === 0 &&
     answer.revision === 7
 
-  if (!success) throw new Error(`Unexpected API answer`)
+  if (!success) throw new Error('Unexpected API answer')
 
   return answer
 }
@@ -174,7 +175,7 @@ export async function register ({ login, password }) {
     answer.result === 1 &&
     answer.sessionId !== undefined
 
-  if (!success) throw new Error(`Unexpected API answer`)
+  if (!success) throw new Error('Unexpected API answer')
 
   return answer
 }
@@ -223,7 +224,7 @@ export async function verify ({
     answer.result === 0 &&
     answer.instanceId !== undefined
 
-  if (!success) throw new Error(`Unexpected API answer`)
+  if (!success) throw new Error('Unexpected API answer')
 
   return answer
 }
@@ -247,7 +248,7 @@ export async function setPin ({ sessionId, pin }) {
     answer.status === 200 &&
     answer.result === 0
 
-  if (!success) throw new Error(`Unexpected API answer`)
+  if (!success) throw new Error('Unexpected API answer')
 
   return answer
 }
@@ -288,7 +289,7 @@ export async function loginByPin ({ instanceId, login, pin }) {
     answer.result === 0 &&
     answer.sessionId !== undefined
 
-  if (!success) throw new Error(`Unexpected API answer`)
+  if (!success) throw new Error('Unexpected API answer')
 
   return answer
 }
@@ -305,9 +306,8 @@ export async function accounts ({ sessionId }) {
     await api._fetchWrapper('/getMyFinancesPage', requestBody, cookie)
 
   let rawAccounts = _.get(response.body, 'response.object.accounts')
-  let convertedAccounts = Array.isArray(rawAccounts)
-    ? converters.convertAccounts(rawAccounts)
-    : []
+  if (!Array.isArray(rawAccounts)) throw new Error('Unexpected API answer')
+  let convertedAccounts = converters.convertAccounts(rawAccounts)
 
   let answer = {
     status: response.status,
@@ -319,15 +319,31 @@ export async function accounts ({ sessionId }) {
     answer.status === 200 &&
     answer.result === 0
 
-  if (!success) throw new Error(`Unexpected API answer`)
+  if (!success) throw new Error('Unexpected API answer')
 
   return answer
 }
 
-export async function operations ({ sessionId, lastOperationId }) {
+export async function operations ({
+  sessionId, fromDate, toDate, lastOperationId
+}) {
+  if (!fromDate && toDate) {
+    throw new Error(
+      'API can not be called with requested arguments combination'
+    )
+  }
+
   let cookie = 'JSESSIONID=' + sessionId
 
   let requestBody = {
+    from: fromDate
+      ? moment(fromDate).utcOffset('+03:00').startOf('day')
+        .format('DD.MM.YYYY')
+      : undefined,
+    to: toDate
+      ? moment(toDate).utcOffset('+03:00').startOf('day')
+        .format('DD.MM.YYYY')
+      : undefined,
     countForPage: OPERATIONS_COUNT_FOR_PAGE,
     ...(lastOperationId ? { lastOperationId } : {}),
     ...api._pickKV(['appver', 'locale', 'bankId'])
@@ -336,16 +352,17 @@ export async function operations ({ sessionId, lastOperationId }) {
   let response = await api._fetchWrapper('/pfmTape', requestBody, cookie)
 
   let rawOperations = _.get(response.body, 'response.object.operations')
-  let convertedOperations = Array.isArray(rawOperations)
-    ? converters.convertOperations(rawOperations)
-    : []
+  if (!Array.isArray(rawOperations)) throw new Error('Unexpected API answer')
+  let convertedOperations = converters.convertOperations(rawOperations)
 
+  console.log('DEBUG', api.OPERATIONS_COUNT_FOR_PAGE, rawOperations.length)
   let answer = {
     status: response.status,
     result: _.get(response.body, 'response.result'),
     operations: convertedOperations,
-    lastOperationId: rawOperations.length === OPERATIONS_COUNT_FOR_PAGE
-      ? _.get(rawOperations[OPERATIONS_COUNT_FOR_PAGE - 1], 'pfmOperationId')
+    lastOperationId: rawOperations.length === api.OPERATIONS_COUNT_FOR_PAGE
+      ? _.get(
+        rawOperations[api.OPERATIONS_COUNT_FOR_PAGE - 1], 'id')
       : undefined
   }
 
@@ -353,12 +370,13 @@ export async function operations ({ sessionId, lastOperationId }) {
     answer.status === 200 &&
     answer.result === 0
 
-  if (!success) throw new Error(`Unexpected API answer`)
+  if (!success) throw new Error('Unexpected API answer')
 
   return answer
 }
 
 export const api = {
+  OPERATIONS_COUNT_FOR_PAGE,
   _pickKV,
   _fetchWrapper,
   version,
