@@ -583,10 +583,12 @@ describe('API calls', () => {
           response: {
             result: 0,
             object: {
-              accounts: [
-                { p1: 'v11', p2: 'v12' },
-                { p1: 'v21', p2: 'v22' }
-              ]
+              accounts: {
+                accounts: [
+                  { p1: 'v11', p2: 'v12' },
+                  { p1: 'v21', p2: 'v22' }
+                ]
+              }
             }
           }
         }
@@ -621,10 +623,12 @@ describe('API calls', () => {
           response: {
             result: 0,
             object: {
-              accounts: [
-                { p1: 'v11', p2: 'v12' },
-                { p1: 'v21', p2: 'v22' }
-              ]
+              accounts: {
+                accounts: [
+                  { p1: 'v11', p2: 'v12' },
+                  { p1: 'v21', p2: 'v22' }
+                ]
+              }
             }
           }
         }
@@ -647,10 +651,12 @@ describe('API calls', () => {
           response: {
             result: -1,
             object: {
-              accounts: [
-                { p1: 'v11', p2: 'v12' },
-                { p1: 'v21', p2: 'v22' }
-              ]
+              accounts: {
+                accounts: [
+                  { p1: 'v11', p2: 'v12' },
+                  { p1: 'v21', p2: 'v22' }
+                ]
+              }
             }
           }
         }
@@ -662,7 +668,7 @@ describe('API calls', () => {
       await expect(promise).rejects.toThrow()
     })
 
-    it('should throw if response.object.accounts property missing in API response body', async () => {
+    it('should throw if response.object.accounts.accounts property missing in API response body', async () => {
       const options = {
         sessionId: 'D3AEE0D745EC3955995E0B56F83EC037.BnkMobws2_3'
       }
@@ -683,7 +689,7 @@ describe('API calls', () => {
       await expect(promise).rejects.toThrow()
     })
 
-    describe('should throw if response.object.accounts from API response body is not an array', () => {
+    describe('should throw if response.object.accounts.accounts from API response body is not an array', () => {
       it('but an empty object', async () => {
         const options = {
           sessionId: 'D3AEE0D745EC3955995E0B56F83EC037.BnkMobws2_3'
@@ -695,7 +701,9 @@ describe('API calls', () => {
             response: {
               result: 0,
               object: {
-                accounts: {}
+                accounts: {
+                  accounts: {}
+                }
               }
             }
           }
@@ -718,7 +726,9 @@ describe('API calls', () => {
             response: {
               result: 0,
               object: {
-                accounts: { x: 123 }
+                accounts: {
+                  accounts: { x: 123 }
+                }
               }
             }
           }
@@ -741,7 +751,9 @@ describe('API calls', () => {
             response: {
               result: 0,
               object: {
-                accounts: 'abcdef'
+                accounts: {
+                  accounts: 'abcdef'
+                }
               }
             }
           }
@@ -764,7 +776,9 @@ describe('API calls', () => {
             response: {
               result: 0,
               object: {
-                accounts: 123
+                accounts: {
+                  accounts: 123
+                }
               }
             }
           }

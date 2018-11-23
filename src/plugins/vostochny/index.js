@@ -51,6 +51,7 @@ export async function scrape ({ preferences, fromDate, toDate }) {
 
   ({ accounts } = await api.accounts({ sessionId }))
 
+  operations = []
   let lastOperationId
   do {
     let operationsAnswer =

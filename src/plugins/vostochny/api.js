@@ -92,7 +92,7 @@ async function _fetchWrapper (url, body, cookie) {
       sanitizeResponseLog: SANITIZE_RESPONSE_LOG,
       log: true, // always must be "true" (TODO: move this info to docs)
       stringify: querystring.stringify,
-      parse: JSON.parse()
+      parse: JSON.parse
     }
   )
 
@@ -305,7 +305,7 @@ export async function accounts ({ sessionId }) {
   let response =
     await api._fetchWrapper('/getMyFinancesPage', requestBody, cookie)
 
-  let rawAccounts = _.get(response.body, 'response.object.accounts')
+  let rawAccounts = _.get(response.body, 'response.object.accounts.accounts')
   if (!Array.isArray(rawAccounts)) throw new Error('Unexpected API answer')
   let convertedAccounts = converters.convertAccounts(rawAccounts)
 
@@ -355,7 +355,6 @@ export async function operations ({
   if (!Array.isArray(rawOperations)) throw new Error('Unexpected API answer')
   let convertedOperations = converters.convertOperations(rawOperations)
 
-  console.log('DEBUG', api.OPERATIONS_COUNT_FOR_PAGE, rawOperations.length)
   let answer = {
     status: response.status,
     result: _.get(response.body, 'response.result'),
