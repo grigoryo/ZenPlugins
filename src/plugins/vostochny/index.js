@@ -29,13 +29,17 @@ export async function scrape ({ preferences, fromDate, toDate }) {
     ({ sessionId } = await api.loginByPin({ instanceId, login, pin }))
   } else {
     if (!preferencesPassword) {
-      inputPassword = await ZenMoney.readLine('[TODO:use approved text]Введите пароль')
+      inputPassword = await ZenMoney.readLine(
+        'Банк Восточный: введите пароль для входа в интернет-банк'
+      )
     }
     password = preferencesPassword || inputPassword
 
     ;({ sessionId } = await api.register({ login, password }))
 
-    verificationCode = await ZenMoney.readLine('[TODO:use approved text]Введите код подтверждения')
+    verificationCode = await ZenMoney.readLine(
+      'Банк Восточный: для подтверждения входа и импорта из банка введите код из СМС'
+    )
 
     ;({ instanceId } =
       await api.verify({ sessionId, login, password, verificationCode }))
