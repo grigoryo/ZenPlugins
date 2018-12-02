@@ -1,5 +1,6 @@
 import * as api from './api'
 import * as utils from '../../common/utils'
+import * as ZenMoney from '../../common/ZenMoney'
 
 export async function scrape ({ preferences, fromDate, toDate }) {
   // user preferences
