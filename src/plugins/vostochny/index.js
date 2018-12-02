@@ -1,3 +1,5 @@
+import _ from 'lodash'
+
 import * as api from './api'
 import * as utils from '../../common/utils'
 import * as ZenMoney from '../../common/ZenMoney'
@@ -22,6 +24,7 @@ export async function scrape ({ preferences, fromDate, toDate }) {
   // function output
   let accounts
   let operations
+  let uniqOperations
   let filteredOperations
 
   await api.version()
@@ -65,7 +68,9 @@ export async function scrape ({ preferences, fromDate, toDate }) {
     lastOperationId = operationsAnswer.lastOperationId
   } while (lastOperationId)
 
-  filteredOperations = operations.filter(operation => {
+  uniqOperations = _.uniqBy(operations, 'id')
+
+  filteredOperations = uniqOperations.filter(operation => {
     return !ZenMoney.isAccountSkipped(operation.incomeAccount)
   })
 

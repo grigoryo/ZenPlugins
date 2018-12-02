@@ -653,6 +653,7 @@ describe('integration tests for vostochny', () => {
                 }
               ],
               'operations': [
+                39, // duplicates can happen
                 40
               ].map(item => ({
                 'accountId': 56367569999,
