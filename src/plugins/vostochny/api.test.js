@@ -1,10 +1,12 @@
-// TODO: import * as network from '../../common/network'
+import querystring from 'querystring'
+
+import * as network from '../../common/network'
 import * as converters from './converters'
 
 import * as api from './api'
 
 let originalImplementation = {}
-// TODO: jest.mock('network')
+jest.mock('../../common/network')
 jest.mock('./converters')
 
 describe('helper functions', () => {
@@ -35,8 +37,102 @@ describe('helper functions', () => {
   })
 
   describe('_fetchWrapper()', () => {
-    it('TODO: write tests', async () => {
-      throw new Error('!')
+    const sampleUrl =
+      '/invalidEndpoint'
+    const sampleBody =
+      { param1: 'value1', param2: 'value2' }
+    const sampleCookie =
+      'JSESSIONID=97F5A75E78F4948A32F3D5C7BD66B1CC.BnkMobws2_1'
+    const sampleAnswer =
+      { status: 200, body: { param3: 'value3', param4: 'value4' } }
+
+    it('should make absolute url from relative and pass it to network.fetch', async () => {
+      await api.api._fetchWrapper(sampleUrl, sampleBody, sampleCookie)
+      expect(network.fetch).toBeCalledWith(
+        'https://mobws.faktura.ru/mobws/3.0/json' + sampleUrl,
+        expect.anything()
+      )
+      network.fetch.mockReset()
+    })
+
+    it('should use POST', async () => {
+      await api.api._fetchWrapper(sampleUrl, sampleBody, sampleCookie)
+      expect(network.fetch).toBeCalledWith(
+        expect.anything(),
+        expect.objectContaining({ method: 'POST' })
+      )
+      network.fetch.mockReset()
+    })
+
+    it('should pass <body> to network.fetch', async () => {
+      await api.api._fetchWrapper(sampleUrl, sampleBody, sampleCookie)
+      expect(network.fetch).toBeCalledWith(
+        expect.anything(),
+        expect.objectContaining({ body: sampleBody })
+      )
+      network.fetch.mockReset()
+    })
+
+    it('should pass <cookie> to network.fetch as a part of a header', async () => {
+      await api.api._fetchWrapper(sampleUrl, sampleBody, sampleCookie)
+      expect(network.fetch).toBeCalledWith(
+        expect.anything(),
+        expect.objectContaining({
+          headers: expect.objectContaining({ cookie: sampleCookie })
+        })
+      )
+      network.fetch.mockReset()
+    })
+
+    it('should not add undefined <cookie> to header', async () => {
+      await api.api._fetchWrapper(sampleUrl, sampleBody)
+      expect(network.fetch).toBeCalledWith(
+        expect.anything(),
+        expect.objectContaining({
+          headers: expect.not.objectContaining({ cookie: expect.anything() })
+        })
+      )
+      network.fetch.mockReset()
+    })
+
+    it('should use url-encoding for request body and expect JSON as response body', async () => {
+      await api.api._fetchWrapper(sampleUrl, sampleBody, sampleCookie)
+      expect(network.fetch).toBeCalledWith(
+        expect.anything(),
+        expect.objectContaining({
+          stringify: querystring.stringify,
+          parse: JSON.parse
+        })
+      )
+      network.fetch.mockReset()
+    })
+
+    it('should use sanitizers for request and response logging', async () => {
+      await api.api._fetchWrapper(sampleUrl, sampleBody, sampleCookie)
+      expect(network.fetch).toBeCalledWith(
+        expect.anything(),
+        expect.objectContaining({
+          sanitizeRequestLog: expect.any(Object),
+          sanitizeResponseLog: expect.any(Object)
+        })
+      )
+      network.fetch.mockReset()
+    })
+
+    it('should return results from network.fetch unchanged', async () => {
+      network.fetch.mockResolvedValue(sampleAnswer)
+      let returnedResult =
+        await api.api._fetchWrapper(sampleUrl, sampleBody, sampleCookie)
+      expect(returnedResult).toEqual(sampleAnswer)
+      network.fetch.mockReset()
+    })
+
+    it('should throw if network.fetch throws', async () => {
+      network.fetch.mockRejectedValue(new Error())
+      let returnedResponse =
+        api.api._fetchWrapper(sampleUrl, sampleBody, sampleCookie)
+      await expect(returnedResponse).rejects.toThrow()
+      network.fetch.mockReset()
     })
   })
 })
