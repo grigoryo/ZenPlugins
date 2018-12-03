@@ -1011,7 +1011,7 @@ describe('integration tests for vostochny', () => {
 
       expect(network.fetch).nthCalledWith(
         1,
-        expect.stringMatching(server.version.input.url),
+        server.version.input.url,
         expect.objectContaining({
           headers: expect.not.objectContaining({ cookie: expect.anything() }),
           body: server.version.input.body
@@ -1019,7 +1019,7 @@ describe('integration tests for vostochny', () => {
       )
       expect(network.fetch).nthCalledWith(
         2,
-        expect.stringMatching(server.register.input.url),
+        server.register.input.url,
         expect.objectContaining({
           headers: expect.not.objectContaining({ cookie: expect.anything() }),
           body: server.register.input.body
@@ -1027,7 +1027,7 @@ describe('integration tests for vostochny', () => {
       )
       expect(network.fetch).nthCalledWith(
         3,
-        expect.stringMatching(server.verify.input.url),
+        server.verify.input.url,
         expect.objectContaining({
           headers: expect.objectContaining({ cookie }),
           body: server.verify.input.body
@@ -1035,7 +1035,7 @@ describe('integration tests for vostochny', () => {
       )
       expect(network.fetch).nthCalledWith(
         4,
-        expect.stringMatching(server.setPin.input.url),
+        server.setPin.input.url,
         expect.objectContaining({
           headers: expect.objectContaining({ cookie }),
           body: server.setPin.input.body
@@ -1043,7 +1043,7 @@ describe('integration tests for vostochny', () => {
       )
       expect(network.fetch).nthCalledWith(
         5,
-        expect.stringMatching(server.accounts.input.url),
+        server.accounts.input.url,
         expect.objectContaining({
           headers: expect.objectContaining({ cookie }),
           body: server.accounts.input.body
@@ -1051,7 +1051,7 @@ describe('integration tests for vostochny', () => {
       )
       expect(network.fetch).nthCalledWith(
         6,
-        expect.stringMatching(server.operationsFirst.input.url),
+        server.operationsFirst.input.url,
         expect.objectContaining({
           headers: expect.objectContaining({ cookie }),
           body: server.operationsFirst.input.body
@@ -1059,7 +1059,7 @@ describe('integration tests for vostochny', () => {
       )
       expect(network.fetch).nthCalledWith(
         7,
-        expect.stringMatching(server.operationsNext.input.url),
+        server.operationsNext.input.url,
         expect.objectContaining({
           headers: expect.objectContaining({ cookie }),
           body: server.operationsNext.input.body
@@ -1143,14 +1143,14 @@ describe('integration tests for vostochny', () => {
     it('should call server API through network.fetch in defined order', () => {
       expect(network.fetch).nthCalledWith(
         2,
-        expect.stringMatching(server.register.input.url),
+        server.register.input.url,
         expect.objectContaining({
           body: expect.objectContaining({ password: 'password2' })
         })
       )
       expect(network.fetch).nthCalledWith(
         3,
-        expect.stringMatching(server.verify.input.url),
+        server.verify.input.url,
         expect.objectContaining({
           body: expect.objectContaining({ password: 'password2' })
         })
@@ -1213,7 +1213,7 @@ describe('integration tests for vostochny', () => {
 
       expect(network.fetch).nthCalledWith(
         1,
-        expect.stringMatching(server.version.input.url),
+        server.version.input.url,
         expect.objectContaining({
           headers: expect.not.objectContaining({ cookie: expect.anything() }),
           body: server.version.input.body
@@ -1221,7 +1221,7 @@ describe('integration tests for vostochny', () => {
       )
       expect(network.fetch).nthCalledWith(
         2,
-        expect.stringMatching(server.loginByPin.input.url),
+        server.loginByPin.input.url,
         expect.objectContaining({
           headers: expect.not.objectContaining({ cookie: expect.anything() }),
           body: server.loginByPin.input.body
@@ -1229,7 +1229,7 @@ describe('integration tests for vostochny', () => {
       )
       expect(network.fetch).nthCalledWith(
         3,
-        expect.stringMatching(server.accounts.input.url),
+        server.accounts.input.url,
         expect.objectContaining({
           headers: expect.objectContaining({ cookie }),
           body: server.accounts.input.body
@@ -1237,7 +1237,7 @@ describe('integration tests for vostochny', () => {
       )
       expect(network.fetch).nthCalledWith(
         4,
-        expect.stringMatching(server.operationsFirst.input.url),
+        server.operationsFirst.input.url,
         expect.objectContaining({
           headers: expect.objectContaining({ cookie }),
           body: server.operationsFirst.input.body
@@ -1245,7 +1245,7 @@ describe('integration tests for vostochny', () => {
       )
       expect(network.fetch).nthCalledWith(
         5,
-        expect.stringMatching(server.operationsNext.input.url),
+        server.operationsNext.input.url,
         expect.objectContaining({
           headers: expect.objectContaining({ cookie }),
           body: server.operationsNext.input.body
@@ -1551,22 +1551,22 @@ describe('integration tests for vostochny', () => {
     it('should call server API through network.fetch in defined order and only four times', () => {
       expect(network.fetch).nthCalledWith(
         1,
-        expect.stringMatching(server.version.input.url),
+        server.version.input.url,
         expect.anything()
       )
       expect(network.fetch).nthCalledWith(
         2,
-        expect.stringMatching(server.loginByPin.input.url),
+        server.loginByPin.input.url,
         expect.anything()
       )
       expect(network.fetch).nthCalledWith(
         3,
-        expect.stringMatching(server.accounts.input.url),
+        server.accounts.input.url,
         expect.anything()
       )
       expect(network.fetch).nthCalledWith(
         4,
-        expect.stringMatching(server.operationsSole.input.url),
+        server.operationsSole.input.url,
         expect.anything()
       )
       expect(network.fetch).toBeCalledTimes(4)
