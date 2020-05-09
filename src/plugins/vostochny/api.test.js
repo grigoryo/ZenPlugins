@@ -160,7 +160,20 @@ describe('API calls', () => {
     })
 
     it('should call _fetchWrapper() with correctly formed options', async () => {
-      throw new Error('TODO: write test')
+      const response = {
+        status: 200,
+        body: { response: { result: 0, object: { revision: 7 } } }
+      }
+      api.api._fetchWrapper = jest.fn(() => response)
+
+      await api.version()
+
+      expect(api.api._fetchWrapper).toBeCalledWith(
+        '/getPFMVersion',
+        expect.objectContaining({
+          body: expect.any(Object)
+        })
+      )
     })
 
     it('should throw on non-200 status code', async () => {
@@ -238,7 +251,35 @@ describe('API calls', () => {
     })
 
     it('should call _fetchWrapper() with correctly formed options', async () => {
-      throw new Error('TODO: write test')
+      const options = {
+        login: 'username',
+        password: 'password'
+      }
+
+      const response = {
+        status: 200,
+        body: {
+          response: {
+            result: 1,
+            object: {
+              sessionId: 'D3AEE0D745EC3955995E0B56F83EC037.BnkMobws2_3'
+            }
+          }
+        }
+      }
+      api.api._fetchWrapper = jest.fn(() => response)
+
+      await api.register(options)
+
+      expect(api.api._fetchWrapper).toBeCalledWith(
+        '/getPFMVersion',
+        expect.objectContaining({
+          body: expect.objectContaining({
+            login: 'username',
+            password: 'password'
+          })
+        })
+      )
     })
 
     it('should throw on non-200 status code', async () => {
@@ -357,7 +398,37 @@ describe('API calls', () => {
     })
 
     it('should call _fetchWrapper() with correctly formed options', async () => {
-      throw new Error('TODO: write test')
+      const options = {
+        sessionId: 'D3AEE0D745EC3955995E0B56F83EC037.BnkMobws2_3',
+        login: 'username',
+        password: 'password',
+        verificationCode: '123456'
+      }
+
+      const response = {
+        status: 200,
+        body: {
+          response: {
+            result: 0,
+            object: {
+              session: { instanceId: '42204229D69F53C653EB7ECCF67A7446' }
+            }
+          }
+        }
+      }
+      api.api._fetchWrapper = jest.fn(() => response)
+
+      await api.verify(options)
+
+      expect(api.api._fetchWrapper).toBeCalledWith(
+        '/getPFMVersion',
+        expect.objectContaining({
+          sessionId: 'D3AEE0D745EC3955995E0B56F83EC037.BnkMobws2_3',
+          login: 'username',
+          password: 'password',
+          verificationCode: '123456'
+        })
+      )
     })
 
     it('should throw on non-200 status code', async () => {
